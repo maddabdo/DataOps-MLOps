@@ -1,6 +1,6 @@
-# 🌍 Air Quality Monitoring – DataOps & MLOps
+#  Air Quality Monitoring – DataOps & MLOps
 
-## 📌 Project Overview
+##  Project Overview
 
 **Air Quality Monitoring – DataOps & MLOps** is a real-time air quality monitoring platform designed to collect, process, analyze, and monitor environmental data.
 
@@ -8,7 +8,7 @@ The main objective is to detect abnormal air quality conditions using data engin
 
 The project integrates DataOps and MLOps practices to ensure reliable data processing, model tracking, and deployment.
 
-## 🎯 Project Objectives
+##  Project Objectives
 
 - Collect air quality data from IoT sensors or simulated data sources.
 - Process real-time data streams.
@@ -19,7 +19,7 @@ The project integrates DataOps and MLOps practices to ensure reliable data proce
 - Expose prediction services through FastAPI.
 - Containerize services using Docker.
 
-## 🏗️ System Architecture
+##  System Architecture
 
 The proposed architecture follows this pipeline:
 
@@ -49,7 +49,7 @@ IoT Sensors / Python Data Generator
                    Dashboard
 ```
 
-## 🛠️ Technologies Used
+##  Technologies Used
 
 | Technology | Purpose |
 |---|---|
@@ -64,7 +64,7 @@ IoT Sensors / Python Data Generator
 | Docker | Containerization |
 | Git & GitHub | Version control and collaboration |
 
-## 📂 Project Structure
+##  Project Structure
 
 ```text
 Air-Quality-Monitoring/
@@ -103,7 +103,7 @@ Air-Quality-Monitoring/
 
 *Note: This is the proposed structure. Update it to match the actual folders created in the repository.*
 
-## 🔄 Data Pipeline
+##  Data Pipeline
 
 The platform is organized into the following stages:
 
@@ -116,7 +116,7 @@ The platform is organized into the following stages:
 7. **API Deployment:** Provide predictions through FastAPI.
 8. **Monitoring:** Visualize air quality indicators and detected anomalies.
 
-## 🚀 Installation and Execution
+##  Installation and Execution
 
 ### Prerequisites
 
@@ -145,7 +145,7 @@ Once the Docker Compose configuration is ready:
 docker compose up --build -d
 ```
 
-## 👥 Team Members
+##  Team Members
 
 This project is developed by a team of three students as part of an academic DataOps & MLOps project.
 
@@ -153,16 +153,16 @@ This project is developed by a team of three students as part of an academic Dat
 - Member 2 – Data Engineering
 - Member 3 – Machine Learning & MLOps
 
-## 📅 Project Timeline
+##  Project Timeline
 
 **Final deadline: December 15, 2026.**
 
 Project planning, development, integration, testing, and documentation are organized using Jira.
 
-## 📌 Project Status
+##  Project Status
 
-🚧 Currently under development.
+ Currently under development.
 
-## 📄 License
+##  License
 
 This project is developed for academic and educational purposes.
