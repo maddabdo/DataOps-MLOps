@@ -1,0 +1,68 @@
+{
+  "best_algorithm": "GradientBoosting",
+  "best_metrics": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "roc_auc": 1.0,
+    "confusion_matrix": [
+      [
+        37,
+        0
+      ],
+      [
+        0,
+        3
+      ]
+    ]
+  },
+  "feature_names": [
+    "pm2_5",
+    "pm10",
+    "no2",
+    "o3",
+    "temperature",
+    "humidity",
+    "pm_ratio",
+    "traffic_proxy",
+    "hour_sin",
+    "hour_cos"
+  ],
+  "all_results": {
+    "RandomForest": {
+      "accuracy": 0.975,
+      "precision": 1.0,
+      "recall": 0.6667,
+      "f1_score": 0.8,
+      "roc_auc": 1.0,
+      "confusion_matrix": [
+        [
+          37,
+          0
+        ],
+        [
+          1,
+          2
+        ]
+      ]
+    },
+    "GradientBoosting": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "roc_auc": 1.0,
+      "confusion_matrix": [
+        [
+          37,
+          0
+        ],
+        [
+          0,
+          3
+        ]
+      ]
+    }
+  }
+}
