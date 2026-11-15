@@ -1,0 +1,41 @@
+# Environments & Python Runtime
+.python_runtime/
+.venv/
+venv/
+ENV/
+env/
+.uv_cache/
+.uv_python/
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Data & Models
+data/raw/*.csv
+data/raw/*.json
+data/processed/*.csv
+data/processed/*.parquet
+ml/models/*.pkl
+ml/models/*.joblib
+mlruns/
+mlruns.db
+
+# Docker & Services
+.env
+*.log
+docker-volumes/
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.bak

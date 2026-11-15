@@ -1,0 +1,164 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # 1. Apache Kafka & Zookeeper Streaming Infrastructure
+  # ============================================================================
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: aqm-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - airquality-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: aqm-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    networks:
+      - airquality-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "9092"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: aqm-kafka-ui
+    depends_on:
+      - kafka
+    ports:
+      - "8085:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local-airquality-cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+    networks:
+      - airquality-network
+
+  # ============================================================================
+  # 2. PostgreSQL Relational Storage
+  # ============================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: aqm-postgres
+    environment:
+      POSTGRES_USER: airquality_user
+      POSTGRES_PASSWORD: airquality_password
+      POSTGRES_DB: air_quality_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+    networks:
+      - airquality-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airquality_user -d air_quality_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # 3. MLflow Tracking Server
+  # ============================================================================
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.14.0
+    container_name: aqm-mlflow
+    ports:
+      - "5000:5000"
+    environment:
+      BACKEND_STORE_URI: sqlite:////mlflow/mlflow.db
+      DEFAULT_ARTIFACT_ROOT: /mlflow/artifacts
+    volumes:
+      - mlflow_data:/mlflow
+    command: >
+      mlflow server
+      --backend-store-uri sqlite:////mlflow/mlflow.db
+      --default-artifact-root /mlflow/artifacts
+      --host 0.0.0.0
+      --port 5000
+    networks:
+      - airquality-network
+
+  # ============================================================================
+  # 4. FastAPI Real-Time Prediction Microservice
+  # ============================================================================
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    container_name: aqm-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://airquality_user:airquality_password@postgres:5432/air_quality_db
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      API_HOST: 0.0.0.0
+      API_PORT: 8000
+    networks:
+      - airquality-network
+
+  # ============================================================================
+  # 5. Interactive Streamlit Monitoring Dashboard
+  # ============================================================================
+  dashboard:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dashboard
+    container_name: aqm-dashboard
+    depends_on:
+      - api
+    ports:
+      - "8501:8501"
+    environment:
+      DATABASE_URL: postgresql://airquality_user:airquality_password@postgres:5432/air_quality_db
+      API_URL: http://api:8000
+    networks:
+      - airquality-network
+
+  # ============================================================================
+  # 6. IoT Telemetry Stream Generator
+  # ============================================================================
+  sensor-generator:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.ingestion
+    container_name: aqm-sensor-generator
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_TOPIC_RAW: raw_data
+    networks:
+      - airquality-network
+
+networks:
+  airquality-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  kafka_data:
+  mlflow_data:
