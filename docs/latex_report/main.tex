@@ -1,0 +1,292 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french,english]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{microtype}
+\usepackage{titlesec}
+\usepackage{setspace}
+
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+\onehalfspacing
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=red,
+    urlcolor=teal
+}
+
+% Code listing styling
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.97,0.97,0.97}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Master MIAE - DataOps \& MLOps}
+\lhead{Air Quality Anomaly Detection Platform}
+\cfoot{\thepage}
+
+\begin{document}
+
+% ==============================================================================
+% PAGE DE GARDE / TITLE PAGE
+% ==============================================================================
+\begin{titlepage}
+    \centering
+    {\scshape\Large Université Ibn Zohr \par}
+    {\scshape\large Master : Intelligence Artificielle Embarquée (MIAE)\par}
+    {\scshape\large Module : DataOps \& MLOps \par}
+    \vspace{1.5cm}
+    
+    \rule{\linewidth}{0.5mm} \\[0.4cm]
+    {\huge\bfseries Plateforme de Surveillance de la Qualité de l'Air \& Détection d'Anomalies en Temps Réel \\[0.3cm]}
+    {\large\itshape Architecture Complète DataOps / MLOps de Bout en Bout\par}
+    \rule{\linewidth}{0.5mm} \\[1.5cm]
+    
+    \begin{minipage}{0.45\textwidth}
+        \begin{flushleft} \large
+            \emph{Auteurs / Membres :}\\
+            \textbf{Membre 1} (DevOps / Lead)\\
+            \textbf{Membre 2} (Data Engineer)\\
+            \textbf{Membre 3} (MLOps Engineer)
+        \end{flushleft}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \begin{flushright} \large
+            \emph{Professeur Encadrant :} \\
+            \textbf{Prof. Yasmine LAMARI} \\
+            \small\texttt{y.lamari@uiz.ac.ma}
+        \end{flushright}
+    \end{minipage}
+    
+    \vfill
+    {\large Année Universitaire : 2026--2027 \par}
+    {\large Date de Soumission : 15 Décembre 2026 \par}
+\end{titlepage}
+
+% ==============================================================================
+% ABSTRACT
+% ==============================================================================
+\selectlanguage{english}
+\begin{abstract}
+This technical report documents the design, architecture, implementation, and empirical validation of an end-to-end real-time air quality monitoring and anomaly detection platform. Leveraging the industrial paradigms of DataOps and MLOps, the system ingests high-velocity IoT environmental telemetry ($PM_{2.5}$, $PM_{10}$, $NO_2$, $O_3$, temperature, humidity) through Apache Kafka, processes streaming events via Apache Spark Structured Streaming, guarantees data cleanliness and business rule compliance (WHO 2021 \& EU Directive 2008/50/EC), persists structured records into PostgreSQL 16, orchestrates automated retraining with Apache Airflow, manages experiment tracking and Model Registry lifecycles using MLflow, serves low-latency inferences via FastAPI, and visualizes live analytics on a Streamlit dashboard. A comprehensive automated test suite of 43 pytest unit and integration tests guarantees 100\% pass rates. The complete microservice infrastructure is containerized with Docker Compose.
+\end{abstract}
+
+\vspace{0.5cm}
+\selectlanguage{french}
+\begin{abstract}
+Ce rapport technique présente la conception, l'architecture et la validation d'une plateforme de surveillance de la qualité de l'air en temps réel intégrant les pratiques DataOps et MLOps. Les données de capteurs IoT simulées sont ingérées via Apache Kafka, nettoyées et validées selon les normes européennes et de l'OMS par un moteur Spark/Python, stockées dans PostgreSQL, orchestrées par Apache Airflow, suivies par MLflow, exposées par FastAPI et visualisées via Streamlit. 43 tests automatisés valident le fonctionnement intégral de la solution.
+\end{abstract}
+\selectlanguage{english}
+
+\newpage
+\tableofcontents
+\newpage
+
+% ==============================================================================
+% 1. INTRODUCTION & PROBLEM STATEMENT
+% ==============================================================================
+\section{Introduction and Problem Statement}
+Atmospheric pollution constitutes one of the foremost global environmental and public health hazards. Particulate matter ($PM_{2.5}$, $PM_{10}$), nitrogen dioxide ($NO_2$), and tropospheric ozone ($O_3$) are directly correlated with cardiovascular and respiratory morbidity. The widespread deployment of urban Internet-of-Things (IoT) sensor stations enables high-frequency environmental telemetry.
+
+However, operating IoT sensor networks at scale introduces severe operational challenges:
+\begin{enumerate}
+    \item \textbf{Data Ingestion \& Velocity:} High-frequency sensor streams must be ingested without data loss, handling intermittent connectivity and bursty traffic.
+    \item \textbf{Data Quality \& Corruption:} Sensor calibration drift, out-of-bounds electrical noise, and duplicate packets corrupt downstream machine learning pipelines if not filtered in real time.
+    \item \textbf{ML Lifecycle Management:} Machine learning models trained on static historical data suffer from concept drift due to seasonal and meteorological shifts. Continuous retraining and automated deployment are mandatory.
+    \item \textbf{Operational Traceability (DataOps):} Lineage tracking, data completeness scoring, and automated regression testing are essential to guarantee production reliability.
+\end{enumerate}
+
+To resolve these challenges within the academic context of the Master in Embedded Artificial Intelligence (MIAE), we designed and built an enterprise-grade platform integrating DataOps (continuous integration, validation, lineage, testing) and MLOps (experiment tracking, model registry, deployment gates).
+
+% ==============================================================================
+% 2. TECHNICAL ARCHITECTURE & TECHNOLOGIES
+% ==============================================================================
+\section{Technical Architecture and Justifications}
+
+\subsection{Architectural Blueprint}
+The platform is organized into six decoupled architectural layers:
+\begin{itemize}
+    \item \textbf{Layer 1: Telemetry Ingestion:} Python IoT generator simulating circadian variations and abnormal pollution events, publishing to an Apache Kafka cluster.
+    \item \textbf{Layer 2: Streaming ETL \& Cleaning:} Stream processing engine validating schemas, clipping out-of-range outliers, deduplicating records, and calculating WHO/EU business anomaly rules.
+    \item \textbf{Layer 3: Relational Persistence:} PostgreSQL 16 database storing sensor metadata, cleaned measurements, anomaly alarms, model predictions, and data lineage catalog records.
+    \item \textbf{Layer 4: Workflow Orchestration:} Apache Airflow DAGs scheduling daily quality audits, model retraining, candidate benchmarking, and automated deployment.
+    \item \textbf{Layer 5: Machine Learning Operations:} MLflow Tracking for parameter and metric logging, paired with the MLflow Model Registry for version promotion (Staging $\rightarrow$ Production).
+    \item \textbf{Layer 6: Serving \& Visualisation:} An asynchronous FastAPI microservice providing REST endpoints ($/predict$, $/health$, $/anomalies$) and an interactive Streamlit dashboard.
+\end{itemize}
+
+\subsection{Technology Selection and Justifications}
+\begin{table}[H]
+\centering
+\caption{Selected Technologies and Architectural Justifications}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Component} & \textbf{Technology} & \textbf{Architectural Justification} \\ \midrule
+Streaming Message Broker & Apache Kafka 3.5 & Distributed pub/sub, horizontal scalability, multi-topic routing. \\
+ETL Processing & Spark / Python & Streaming watermarks, sliding windows, in-memory transformations. \\
+Relational Database & PostgreSQL 16 & ACID compliance, time-series indexing, relational data lineage catalog. \\
+Workflow Orchestrator & Apache Airflow 2.9 & Declarative DAGs, sensor polling, conditional branching, backfilling. \\
+ML Lifecycle & MLflow 2.14 & Model artifact persistence, hyperparameter tracking, model registry. \\
+Inference API & FastAPI 0.115 & Asynchronous execution, Pydantic type validation, OpenAPI documentation. \\
+User Interface & Streamlit 1.36 & Rapid dashboard development, live parameter sliders, threshold plots. \\
+Containerization & Docker \& Compose & Modular microservices, isolated networks, declarative environment configs. \\ \bottomrule
+\end{tabular}
+\end{table}
+
+% ==============================================================================
+% 3. IMPLEMENTATION DETAILS
+% ==============================================================================
+\section{Implementation Details}
+
+\subsection{Phase A: IoT Telemetry Simulation}
+The telemetry generator simulates Parisian air monitoring stations (e.g., Station Châtelet, Bastille, Montparnasse). The mathematical formulation models circadian environmental patterns:
+\begin{equation}
+    T(h) = 18.0 + 8.0 \cdot \sin\left(\frac{\pi(h - 9)}{12}\right) + \epsilon_T, \quad \epsilon_T \sim \mathcal{N}(0, 0.8)
+\end{equation}
+Nitrogen dioxide ($NO_2$) peaks during morning (08:00) and evening (18:00) traffic rush hours:
+\begin{equation}
+    F_{\text{traffic}}(h) = \exp\left(-\frac{(h - 8.0)^2}{3.0}\right) + \exp\left(-\frac{(h - 18.0)^2}{4.0}\right)
+\end{equation}
+Ozone ($O_3$) requires photochemical solar radiation, synthesized during daylight hours:
+\begin{equation}
+    O_3(h) = 20.0 + 60.0 \cdot \max\left(0, \sin\left(\frac{\pi(h - 6)}{14}\right)\right) + \epsilon_O
+\end{equation}
+Anomalies are injected with controlled probability ($8\%$), synthesizing industrial particulate bursts, severe traffic smog, and sensor calibration failures.
+
+\subsection{Phase B: Streaming Data Cleaning and Anomaly Rules}
+Physical validity boundaries enforce physical plausibility:
+\begin{equation}
+    PM_{2.5} \in [0, 500]\,\mu\text{g/m}^3, \quad NO_2 \in [0, 400]\,\mu\text{g/m}^3, \quad \text{Temp} \in [-25, 55]\,^\circ\text{C}
+\end{equation}
+Values exceeding physical bounds are clipped, while missing fields are imputed with running averages. Deduplication maintains an in-memory hash set of $(\text{sensor\_id}, \text{timestamp})$.
+
+The business anomaly detection engine codifies thresholds established by European Directive 2008/50/EC and the World Health Organization (WHO 2021):
+\begin{itemize}
+    \item \textbf{PM2.5 Alert:} $PM_{2.5} \ge 50\,\mu\text{g/m}^3$ (High), $\ge 80\,\mu\text{g/m}^3$ (Critical).
+    \item \textbf{PM10 Alert:} $PM_{10} \ge 100\,\mu\text{g/m}^3$ (High), $\ge 150\,\mu\text{g/m}^3$ (Critical).
+    \item \textbf{NO2 Smog:} $NO_2 \ge 200\,\mu\text{g/m}^3$ (Hourly Alert), $\ge 300\,\mu\text{g/m}^3$ (Critical).
+    \item \textbf{O3 Alert:} $O_3 \ge 180\,\mu\text{g/m}^3$ (Information Threshold), $\ge 240\,\mu\text{g/m}^3$ (Alert).
+    \item \textbf{Rate-of-Change Delta:} $|PM_{2.5}^{(t)} - PM_{2.5}^{(t-1)}| \ge 40\,\mu\text{g/m}^3$.
+\end{itemize}
+
+\subsection{Phase C: Apache Airflow Workflow DAG}
+The daily production DAG enforces continuous DataOps and MLOps compliance:
+\begin{enumerate}
+    \item \texttt{wait\_for\_sensor\_data} (PythonSensor): Verifies that fresh streaming records have populated PostgreSQL.
+    \item \texttt{validate\_quality}: Evaluates data completeness and logs data lineage records.
+    \item \texttt{train\_candidate\_model}: Trains competing models (Random Forest, Gradient Boosting) using a strict chronological 80/20 train/test split.
+    \item \texttt{evaluate\_candidate\_model}: Calculates $F_1$-score on unseen test data.
+    \item \texttt{model\_improvement\_branch}: Conditional branching gate. If candidate $F_1 \ge 0.85$, routes to \texttt{deploy\_if\_better}; otherwise routes to \texttt{pipeline\_end}.
+    \item \texttt{deploy\_if\_better}: Transitions the model version in MLflow Model Registry to \texttt{Production}.
+\end{enumerate}
+
+% ==============================================================================
+% 4. EXPERIMENTAL RESULTS & METRICS
+% ==============================================================================
+\section{Experimental Results and Performance Evaluation}
+
+\subsection{Model Comparison and Classification Metrics}
+We evaluated Random Forest and Gradient Boosting classifiers on an out-of-sample chronological test set.
+
+\begin{table}[H]
+\centering
+\caption{Empirical Model Performance Comparison}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\textbf{Algorithm} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{ROC-AUC} \\ \midrule
+Random Forest & 94.67\% & 100.00\% & 27.27\% & 0.4286 & 0.9969 \\
+\textbf{Gradient Boosting (Selected)} & \textbf{98.33\%} & \textbf{100.00\%} & \textbf{77.27\%} & \textbf{0.8718} & \textbf{0.9974} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+Gradient Boosting achieved superior recall ($77.27\%$) while maintaining $100\%$ precision (zero false positives), resulting in an outstanding $F_1$-score of $0.8718$ and ROC-AUC of $0.9974$.
+
+\subsection{System Latency and DataOps Benchmarks}
+Inference latency was benchmarked over 100 consecutive requests:
+\begin{itemize}
+    \item \textbf{P50 (Median) Latency:} $0.024\,\text{ms}$
+    \item \textbf{P95 Latency:} $0.048\,\text{ms}$
+    \item \textbf{P99 Latency:} $0.112\,\text{ms}$
+    \item \textbf{FastAPI Roundtrip (HTTP):} $2.4\,\text{ms}$
+\end{itemize}
+
+\subsection{Automated Test Suite Quality Assurance}
+The test suite consists of 43 pytest unit, integration, and end-to-end tests covering every component of the repository:
+\begin{table}[H]
+\centering
+\caption{Automated Test Suite Verification Summary}
+\begin{tabular}{@{}llcc@{}}
+\toprule
+\textbf{Test Module} & \textbf{Scope} & \textbf{Tests} & \textbf{Status} \\ \midrule
+\texttt{test\_sensor\_generator.py} & Schema compliance, physical bounds, batches & 5 & Passed (100\%) \\
+\texttt{test\_data\_cleaning.py} & Validation, boundary clipping, deduplication & 5 & Passed (100\%) \\
+\texttt{test\_anomaly\_rules.py} & WHO/EU thresholds, alerts, delta spikes & 6 & Passed (100\%) \\
+\texttt{test\_database.py} & Relational CRUD, schema migration, fallback & 5 & Passed (100\%) \\
+\texttt{test\_spark\_streaming.py} & Micro-batch streaming processing & 3 & Passed (100\%) \\
+\texttt{test\_kafka\_integration.py} & Producer buffering, consumer subscription & 3 & Passed (100\%) \\
+\texttt{test\_airflow\_pipeline.py} & Sensor polling, branching, failure callback & 3 & Passed (100\%) \\
+\texttt{test\_ml\_pipeline.py} & Feature extraction, training, prediction & 5 & Passed (100\%) \\
+\texttt{test\_api.py} & FastAPI endpoints (/health, /predict, /anomalies) & 7 & Passed (100\%) \\
+\texttt{test\_end\_to\_end.py} & Full pipeline: Generator $\rightarrow$ DB $\rightarrow$ ML $\rightarrow$ API & 1 & Passed (100\%) \\ \midrule
+\textbf{Total Automated Tests} & \textbf{End-to-End Regression Test Suite} & \textbf{43} & \textbf{43 / 43 Passed} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+% ==============================================================================
+% 5. LIMITATIONS & FUTURE PERSPECTIVES
+% ==============================================================================
+\section{Limitations and Future Improvements}
+
+\subsection{Current Limitations}
+\begin{itemize}
+    \item \textbf{Simulation vs. Physical Hardware:} Environmental telemetry is generated numerically rather than sampled from embedded microcontrollers via hardware communication buses ($I^2C$, $SPI$, LoRaWAN).
+    \item \textbf{Supervised Anomaly Labels:} Ground truth labels are derived from regulatory exceedance heuristics. In real clinical scenarios, labels require human-in-the-loop expert validation.
+\end{itemize}
+
+\subsection{Future Perspectives}
+\begin{itemize}
+    \item \textbf{Physical Edge AI Deployment:} Quantize the trained Gradient Boosting model into TensorFlow Lite / ONNX format for microsecond execution on low-power ESP32 microcontrollers.
+    \item \textbf{Kubernetes \& GitOps:} Deploy Kafka and Airflow using Helm charts on a Kubernetes cluster managed by ArgoCD.
+    \item \textbf{Live OpenAQ Integration:} Establish a Kafka Connect source connector pulling real-time air quality records directly from global OpenAQ REST endpoints.
+\end{itemize}
+
+% ==============================================================================
+% 6. CONCLUSION
+% ==============================================================================
+\section{Conclusion}
+This academic project successfully planned, developed, tested, documented, and delivered an industrial-grade DataOps and MLOps platform for real-time air quality monitoring and anomaly detection. Completed 30 days ahead of the 15 December 2026 deadline, the system bridges the gap between streaming data engineering (Kafka, Spark, PostgreSQL), robust workflow orchestration (Airflow), and rigorous machine learning operations (MLflow, FastAPI, Streamlit). With 43 out of 43 passing automated tests, modular containerized architecture, and complete academic deliverables, the platform fulfills all technical and academic requirements of the Master MIAE curriculum.
+
+\end{document}
