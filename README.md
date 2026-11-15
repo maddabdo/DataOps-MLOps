@@ -163,8 +163,8 @@ air-quality-monitoring-dataops-mlops/
 ### Option A: Local Python Development
 ```bash
 # 1. Clone repository
-git clone https://github.com/Ismek/air-quality-monitoring-dataops-mlops.git
-cd air-quality-monitoring-dataops-mlops
+git clone https://github.com/maddabdo/DataOps-MLOps.git
+cd DataOps-MLOps
 
 # 2. Copy environment template
 cp .env.example .env
@@ -305,11 +305,13 @@ tests/test_end_to_end.py::test_full_end_to_end_pipeline PASSED           [100%]
 
 ## 8. Team Roles & Scrum Contribution
 
+**Jira Project Board:** [https://ma4873173-1794336439742.atlassian.net/jira/software/projects/KAN/boards/1](https://ma4873173-1794336439742.atlassian.net/jira/software/projects/KAN/boards/1)
+
 | Team Member | Academic Responsibilities | Assigned Epics | Sprint Focus |
 | :--- | :--- | :--- | :--- |
-| **Member 1** | Project Manager / Scrum Master / Kafka / Airflow / DevOps | EPIC 01, EPIC 03, EPIC 06, EPIC 07 | Sprints 1, 2, 5 |
-| **Member 2** | Data Engineer / Python / Spark / PostgreSQL | EPIC 01, EPIC 02, EPIC 07 | Sprints 1, 2, 5 |
-| **Member 3** | ML Engineer / Scikit-learn / MLflow / FastAPI / Dashboard | EPIC 04, EPIC 05, EPIC 07 | Sprints 3, 4, 5 |
+| **Member 1** | Project Manager / Scrum Master / Kafka / Airflow / DevOps | KAN-EPIC-01, KAN-EPIC-03, KAN-EPIC-06, KAN-EPIC-07 | Sprints 1, 2, 5 |
+| **Member 2** | Data Engineer / Python / Spark / PostgreSQL | KAN-EPIC-01, KAN-EPIC-02, KAN-EPIC-07 | Sprints 1, 2, 5 |
+| **Member 3** | ML Engineer / Scikit-learn / MLflow / FastAPI / Dashboard | KAN-EPIC-04, KAN-EPIC-05, KAN-EPIC-07 | Sprints 3, 4, 5 |
 
 See [`jira/README.md`](file:///c:/Users/Pc/Desktop/data-ops/jira/README.md) for full sprint planning, story points, and CSV backlog import.
 

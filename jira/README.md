@@ -4,9 +4,9 @@ This directory contains the complete agile project structure for the **Air Quali
 
 ## 1. Project Overview
 - **Project Name:** `Air Quality Monitoring – DataOps & MLOps`
-- **Project Key:** `AQM`
-- **Project Type:** Jira Software (Scrum)
-- **Scrum Board:** `AQM Scrum Board`
+- **Project Key:** `KAN`
+- **Project Type:** Jira Software (Scrum / Kanban)
+- **Scrum Board URL:** [https://ma4873173-1794336439742.atlassian.net/jira/software/projects/KAN/boards/1](https://ma4873173-1794336439742.atlassian.net/jira/software/projects/KAN/boards/1)
 - **Board Workflow:** `TO DO` ➔ `IN PROGRESS` ➔ `IN REVIEW` ➔ `DONE`
 
 ---

@@ -20,10 +20,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-JIRA_URL = os.getenv("JIRA_INSTANCE_URL", "https://your-domain.atlassian.net").rstrip("/")
-JIRA_EMAIL = os.getenv("JIRA_USER_EMAIL", "")
+JIRA_URL = os.getenv("JIRA_INSTANCE_URL", "https://ma4873173-1794336439742.atlassian.net").rstrip("/")
+JIRA_EMAIL = os.getenv("JIRA_USER_EMAIL", "ma4873173@gmail.com")
 JIRA_API_TOKEN = os.getenv("JIRA_API_TOKEN", "")
-PROJECT_KEY = os.getenv("JIRA_PROJECT_KEY", "AQM")
+PROJECT_KEY = os.getenv("JIRA_PROJECT_KEY", "KAN")
 
 def get_auth():
     if not JIRA_EMAIL or not JIRA_API_TOKEN:
