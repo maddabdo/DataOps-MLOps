@@ -148,6 +148,13 @@ The platform is organized into six decoupled architectural layers:
     \item \textbf{Layer 6: Serving \& Visualisation:} An asynchronous FastAPI microservice providing REST endpoints ($/predict$, $/health$, $/anomalies$) and an interactive Streamlit dashboard.
 \end{itemize}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\linewidth]{figures/fig1_architecture.png}
+    \caption{End-to-End Real-Time DataOps and MLOps System Architecture Blueprint.}
+    \label{fig:arch}
+\end{figure}
+
 \subsection{Technology Selection and Justifications}
 \begin{table}[H]
 \centering
@@ -186,6 +193,13 @@ Ozone ($O_3$) requires photochemical solar radiation, synthesized during dayligh
 \end{equation}
 Anomalies are injected with controlled probability ($8\%$), synthesizing industrial particulate bursts, severe traffic smog, and sensor calibration failures.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{figures/fig7_kafka_streaming.png}
+    \caption{Apache Kafka Real-Time Multi-Topic Streaming Ingestion and Partition Routing.}
+    \label{fig:kafka}
+\end{figure}
+
 \subsection{Phase B: Streaming Data Cleaning and Anomaly Rules}
 Physical validity boundaries enforce physical plausibility:
 \begin{equation}
@@ -213,6 +227,13 @@ The daily production DAG enforces continuous DataOps and MLOps compliance:
     \item \texttt{deploy\_if\_better}: Transitions the model version in MLflow Model Registry to \texttt{Production}.
 \end{enumerate}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\linewidth]{figures/fig6_airflow_dag.png}
+    \caption{Apache Airflow Directed Acyclic Graph (DAG) for Daily Automated Retraining and DataOps Quality Audits.}
+    \label{fig:airflow}
+\end{figure}
+
 % ==============================================================================
 % 4. EXPERIMENTAL RESULTS & METRICS
 % ==============================================================================
@@ -234,7 +255,14 @@ Random Forest & 94.67\% & 100.00\% & 27.27\% & 0.4286 & 0.9969 \\
 
 Gradient Boosting achieved superior recall ($77.27\%$) while maintaining $100\%$ precision (zero false positives), resulting in an outstanding $F_1$-score of $0.8718$ and ROC-AUC of $0.9974$.
 
-\subsection{System Latency and DataOps Benchmarks}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\linewidth]{figures/fig5_mlflow_tracking.png}
+    \caption{MLflow Tracking Dashboard, Model Benchmarking, and Production Registry Lifecycle.}
+    \label{fig:mlflow}
+\end{figure}
+
+\subsection{System Latency, Serving and Visualisation}
 Inference latency was benchmarked over 100 consecutive requests:
 \begin{itemize}
     \item \textbf{P50 (Median) Latency:} $0.024\,\text{ms}$
@@ -242,6 +270,20 @@ Inference latency was benchmarked over 100 consecutive requests:
     \item \textbf{P99 Latency:} $0.112\,\text{ms}$
     \item \textbf{FastAPI Roundtrip (HTTP):} $2.4\,\text{ms}$
 \end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{figures/fig4_fastapi_swagger.png}
+    \caption{FastAPI Interactive REST Documentation (Swagger UI) with Real-Time Inference Payload and Validation.}
+    \label{fig:swagger}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\linewidth]{figures/fig3_streamlit_dashboard.png}
+    \caption{Streamlit Real-Time Supervision Dashboard, Parisian GPS Station Network, and Live Anomaly Injection.}
+    \label{fig:dashboard}
+\end{figure}
 
 \subsection{Automated Test Suite Quality Assurance}
 The test suite consists of 43 pytest unit, integration, and end-to-end tests covering every component of the repository:
@@ -264,6 +306,23 @@ The test suite consists of 43 pytest unit, integration, and end-to-end tests cov
 \textbf{Total Automated Tests} & \textbf{End-to-End Regression Test Suite} & \textbf{43} & \textbf{43 / 43 Passed} \\ \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{figures/fig2_pytest_execution.png}
+    \caption{Pytest Automated Test Runner Execution Showing 100\% Pass Rate Across All 43 Units and Integration Tests.}
+    \label{fig:pytest}
+\end{figure}
+
+\subsection{Agile Scrum Governance and Jira Board Tracking}
+In accordance with modern DataOps principles, development followed the Agile Scrum framework structured across 5 sprints and 7 Jira Epics on Atlassian Jira Software (Project Key: \texttt{KAN}).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\linewidth]{figures/fig8_jira_scrum_kanban.png}
+    \caption{Jira Agile Scrum and Kanban Board Governing Sprint Execution and Deliverables Tracking.}
+    \label{fig:jira}
+\end{figure}
 
 % ==============================================================================
 % 5. LIMITATIONS & FUTURE PERSPECTIVES

@@ -27,3 +27,4 @@ Epic,KAN-EPIC-07,"EPIC 07 – Documentation & Presentation","Produce complete ac
 Story,KAN-701,"Comprehensive GitHub README and Architecture Documentation","Document complete system architecture, sequence diagrams, quickstart instructions, API references, and team contributions.",High,MEMBER_1_ACCOUNT_ID,3,Sprint 5,2026-12-08,2026-12-10,To Do,KAN-EPIC-07
 Story,KAN-702,"Academic Technical Report in LaTeX (Overleaf compatible)","Write complete academic report with title page, abstract, table of contents, justified tech choices, architecture, experimental results, and conclusion.",High,MEMBER_2_ACCOUNT_ID,5,Sprint 5,2026-12-10,2026-12-13,To Do,KAN-EPIC-07
 Story,KAN-703,"20-Minute Defense Presentation Slides & Live Demo Scenario","Create presentation slide deck for 20-minute defense and step-by-step live demonstration script.",High,MEMBER_3_ACCOUNT_ID,3,Sprint 5,2026-12-13,2026-12-15,To Do,KAN-EPIC-07
+

@@ -1,5 +1,6 @@
 # Environments & Python Runtime
 .python_runtime/
+.matplotlib/
 .venv/
 venv/
 ENV/
